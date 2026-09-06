@@ -1,0 +1,12 @@
+/target
+Cargo.lock
+*.bin
+*.uf2
+*.zip
+*.hex
+*.log
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target

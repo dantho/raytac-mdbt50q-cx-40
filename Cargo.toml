@@ -1,0 +1,58 @@
+[package]
+name = "raytak-mdbt50q-cx-40"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+# Panic immediately on entry to main. Proves the app is reached and that the
+# panic-to-DFU handler works: the module should re-enumerate as the bootloader.
+selftest-panic = []
+
+[dependencies]
+# No `critical-section-single-core` here: nrf-mpsl must own the critical-section
+# impl so that it can keep the radio's high-priority interrupts unmasked.
+cortex-m = { version = "0.7", features = ["inline-asm"] }
+# `set-vtor`: the Nordic bootloader jumps to 0x1000 without relocating the
+# vector table, so main runs but interrupts never reach our handlers.
+cortex-m-rt = { version = "0.7", features = ["set-vtor"] }
+
+embassy-executor = { version = "0.9", features = ["arch-cortex-m", "executor-thread", "defmt"] }
+embassy-time = { version = "0.5", features = ["defmt"] }
+embassy-sync = { version = "0.7", features = ["defmt"] }
+embassy-futures = "0.1"
+embassy-nrf = { version = "0.11", features = [
+    "defmt",
+    "nrf52840",
+    "gpiote",
+    # RTC0 + TIMER0 are owned by the MPSL, so the time driver must live on RTC1.
+    "time-driver-rtc1",
+    "unstable-pac",
+] }
+
+nrf-sdc = { version = "0.4", default-features = false, features = ["defmt", "peripheral", "nrf52840"] }
+nrf-mpsl = { version = "0.4", default-features = false, features = ["defmt", "critical-section-impl"] }
+# `default-features = false` keeps central/extended-advertising out, so the
+# linker only needs the peripheral-only SoftDevice Controller library.
+trouble-host = { version = "0.8", default-features = false, features = [
+    "defmt",
+    "peripheral",
+    "default-packet-pool",
+] }
+
+static_cell = "2"
+rand_core = "0.6"
+# Only needed so the standalone `blink` probe gets an interrupt vector table.
+nrf-pac = { version = "0.4", features = ["nrf52840"] }
+
+defmt = "1"
+defmt-rtt = "1"
+
+[profile.dev]
+opt-level = "s"
+debug = 2
+
+[profile.release]
+codegen-units = 1
+debug = 2
+lto = "fat"
+opt-level = "s"

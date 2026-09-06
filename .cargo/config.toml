@@ -1,0 +1,17 @@
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+# Only usable with an SWD probe. For USB DFU, run `cargo objcopy` + `nrfutil`
+# (see the flashing steps) instead of `cargo run`.
+runner = "probe-rs run --chip nRF52840_xxAA"
+rustflags = [
+  "-C", "link-arg=--nmagic",
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=-Tdefmt.x",
+]
+
+[env]
+# defmt-rtt blocks when its buffer fills with no debugger attached. Set this to
+# "off" to compile the logging out entirely when running untethered.
+DEFMT_LOG = "info"

@@ -156,8 +156,8 @@ In order of value:
 
 - [src/main.rs](src/main.rs) — BLE advertising firmware. Builds clean; contains
   changes 1–4 above. Feature `selftest-panic` panics immediately on entry.
-- [src/bin/blink.rs](src/bin/blink.rs) — bare-metal GPIO sweep, no embassy.
-- [src/bin/probe.rs](src/bin/probe.rs) — liveness probe (arm GPREGRET, blink
+- [src/blink.rs](src/blink.rs) — bare-metal GPIO sweep, no embassy.
+- [src/probe.rs](src/probe.rs) — liveness probe (arm GPREGRET, blink
   `P0.18`, reset).
 - [memory.x](memory.x) — corrected to the measured layout: app `0x1000`,
   length `0xF3000` up to the bootloader at `0xF4000`.
